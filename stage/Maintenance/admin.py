@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Machine, Operateur, Poste, LigneProduction
+from .models import *
 
 @admin.register(Machine)
 class MachineAdmin(admin.ModelAdmin):
@@ -23,3 +23,9 @@ class PosteAdmin(admin.ModelAdmin):
 class LigneProductionAdmin(admin.ModelAdmin):
     list_display = ('nom', 'description')
     search_fields = ('nom',)
+
+
+@admin.register(PhotosMachines)
+class PhotoMachineAdmin(admin.ModelAdmin):
+   class PhotoMachineAdmin(admin.ModelAdmin):
+    list_display = ('machine', 'google_drive_url', 'description')  # corrigé ici

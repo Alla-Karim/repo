@@ -1,82 +1,388 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-bs-theme="auto" style="height:100%">
 <head>
-    <meta charset="UTF-8" />
-    <title>Liste des machines</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #f9fafb;
-        }
-        .list-container {
-            max-width: 900px;
-            margin: 60px auto;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Machines liées à la maintenance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    /* Tes styles existants */
+    html, body {
+      height: 100%;
+      margin: 0;
+      background-color: #f9fafb;
+      color: #212529;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .container-fluid {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 2rem;
+      overflow: hidden;
+      max-width: 100vw;
+    }
+    h1.page-title {
+      margin: 1rem 0 0.5rem 0;
+      font-weight: 700;
+      font-size: 2rem;
+      color: #0d6efd;
+      user-select: none;
+      text-align: center;
+    }
+    header {
+      flex: 0 0 auto;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      background: var(--bs-body-bg, #fff);
+      position: sticky;
+      top: 3.5rem; /* sous le titre */
+      z-index: 10;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    /* Barre d'actions en 3 zones */
+    .actions-left, .actions-center, .actions-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .actions-center {
+      flex: 1;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Styles inputs de recherche */
+    .search-input {
+      max-width: 200px;
+      width: 100%;
+    }
+
+    .table-container {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      background-color: var(--bs-body-bg, #fff);
+      transition: background-color 0.3s ease;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.7rem;
+      user-select: none;
+    }
+
+    thead tr {
+      background-color: #343a40;
+      color: white;
+      border-radius: 1rem;
+    }
+
+    thead th {
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-weight: 600;
+      vertical-align: middle;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      border: none;
+      transition: color 0.2s ease;
+    }
+    thead th:hover, thead th:focus {
+      color: #0d6efd;
+      outline: none;
+    }
+
+    thead th .sort-arrow {
+      margin-left: 0.5rem;
+      font-size: 0.75rem;
+      user-select: none;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+    thead th.sorted-asc .sort-arrow.asc,
+    thead th.sorted-desc .sort-arrow.desc {
+      opacity: 1;
+      font-weight: 700;
+    }
+
+    tbody tr {
+      background-color: white;
+      box-shadow: 0 3px 10px rgb(0 0 0 / 0.05);
+      transition: background-color 0.25s ease;
+      border-radius: 0.75rem;
+      cursor: default;
+    }
+    tbody tr:hover {
+      background-color: #e9f0ff;
+      box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
+    }
+
+    tbody td {
+      padding: 1rem 1.2rem;
+      vertical-align: middle;
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    tbody td:last-child {
+      white-space: nowrap;
+    }
+
+    /* Ajout pour ligne cliquable */
+    tr.clickable-row {
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container list-container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Machines</h1>
+  <div class="container-fluid d-flex flex-column" style="height:100%">
+    <h1 class="page-title" tabindex="0">Machines liées à la maintenance</h1>
 
-        <div>
-            <a href="{% url 'machine_create' %}" class="btn btn-success me-2">
-                ➕ Ajouter une machine
-            </a>
-
-            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-secondary">
-                    🔓 Déconnexion
-                </button>
-            </form>
+    <header>
+      <div class="header-row">
+        <div class="actions-left">
+          <a href="{% url 'machine_create' %}" class="btn btn-success" aria-label="Ajouter une machine">
+            <i class="bi bi-plus-lg"></i> Ajouter
+          </a>
         </div>
-    </div>
+        <div class="actions-center" aria-label="Filtres de recherche">
+          <input
+            type="search"
+            id="searchRef"
+            class="form-control search-input"
+            placeholder="Recherche Référence"
+            aria-label="Recherche par référence"
+            autocomplete="off"
+          />
+          <input
+            type="search"
+            id="searchPoste"
+            class="form-control search-input"
+            placeholder="Recherche Poste"
+            aria-label="Recherche par poste"
+            autocomplete="off"
+          />
+          <input
+            type="search"
+            id="searchEtat"
+            class="form-control search-input"
+            placeholder="Recherche État"
+            aria-label="Recherche par état"
+            autocomplete="off"
+          />
+        </div>
+        <div class="actions-right">
+          <form method="post" action="{% url 'logout' %}" class="d-inline" aria-label="Déconnexion">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-secondary">
+              <i class="bi bi-box-arrow-right"></i> Déconnexion
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
 
-    <div class="table-responsive shadow-sm rounded">
-        <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>Référence</th>
-                    <th>Poste</th>
-                    <th>État</th>
-                    <th>Date d'achat</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for machine in machines %}
-                <tr>
-                    <td>{{ machine.ref_constructeur }}</td>
-                    <td>
-                        {% if machine.poste %}
-                        {{ machine.poste.nom }}
-                        {% else %}
-                        N/A
-                        {% endif %}
-                    </td>
-                    <td>{{ machine.etat }}</td>
-                    <td>{{ machine.date_achat }}</td>
-                    <td>
-                        <a href="{% url 'machine_update' machine.pk %}" class="btn btn-primary btn-sm me-1">
-                            Modifier
-                        </a>
-                        <a href="{% url 'machine_delete' machine.pk %}" class="btn btn-danger btn-sm">
-                            Supprimer
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">Aucune machine trouvée.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="table-container mt-3" role="region" aria-live="polite" aria-relevant="all" tabindex="0">
+      <table id="machinesTable" class="table table-hover align-middle mb-0" role="grid" aria-describedby="tableDescription">
+        <thead>
+          <tr>
+            <th scope="col" tabindex="0" role="button" aria-sort="none" data-column="ref_constructeur">
+              Référence
+              <span class="sort-arrow asc" aria-hidden="true">▲</span><span class="sort-arrow desc" aria-hidden="true">▼</span>
+            </th>
+            <th scope="col" tabindex="0" role="button" aria-sort="none" data-column="poste">
+              Poste
+              <span class="sort-arrow asc" aria-hidden="true">▲</span><span class="sort-arrow desc" aria-hidden="true">▼</span>
+            </th>
+            <th scope="col" tabindex="0" role="button" aria-sort="none" data-column="etat">
+              État
+              <span class="sort-arrow asc" aria-hidden="true">▲</span><span class="sort-arrow desc" aria-hidden="true">▼</span>
+            </th>
+            <th scope="col" tabindex="0" role="button" aria-sort="none" data-column="date_achat">
+              Date d'achat
+              <span class="sort-arrow asc" aria-hidden="true">▲</span><span class="sort-arrow desc" aria-hidden="true">▼</span>
+            </th>
+            <th scope="col" aria-label="Actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="machinesTableBody">
+          {% for machine in machines %}
+          {% with photo=machine.photos.first %}
+          <tr class="{% if photo %}clickable-row{% endif %}" {% if photo %}data-href="{{ photo.google_drive_url }}"{% endif %}>
+            <td data-column="ref_constructeur">{{ machine.ref_constructeur }}</td>
+            <td data-column="poste">{% if machine.poste %}{{ machine.poste.nom }}{% else %}N/A{% endif %}</td>
+            <td data-column="etat">{{ machine.etat }}</td>
+            <td data-column="date_achat">{{ machine.date_achat }}</td>
+            <td>
+              {% if photo %}
+                <a href="{% url 'supprimer_toutes_photos_par_machine' machine.id %}" class="btn btn-sm btn-outline-danger" aria-label="Supprimer la photo de {{ machine.ref_constructeur }}">
+                  Supprimer la photo
+                </a>
+              {% else %}
+                <a href="{% url 'ajouter_photo_machine' machine.id %}" class="btn btn-sm btn-outline-info" aria-label="Ajouter une photo à {{ machine.ref_constructeur }}">
+                  Ajouter une photo
+                </a>
+              {% endif %}
+              <a href="{% url 'machine_update' machine.pk %}" class="btn btn-primary btn-sm" aria-label="Modifier {{ machine.ref_constructeur }}">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a href="{% url 'machine_delete' machine.pk %}" class="btn btn-danger btn-sm" aria-label="Supprimer {{ machine.ref_constructeur }}">
+                <i class="bi bi-trash-fill"></i>
+              </a>
+            </td>
+          </tr>
+          {% endwith %}
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted fst-italic">Aucune machine trouvée.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-</div>
+  </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (() => {
+      const searchRef = document.getElementById('searchRef');
+      const searchPoste = document.getElementById('searchPoste');
+      const searchEtat = document.getElementById('searchEtat');
+      const tbody = document.getElementById('machinesTableBody');
+      let rows = Array.from(tbody.querySelectorAll('tr'));
+
+      // Fonction de filtrage combiné (AND)
+      function filterRows() {
+        const valRef = searchRef.value.toLowerCase();
+        const valPoste = searchPoste.value.toLowerCase();
+        const valEtat = searchEtat.value.toLowerCase();
+
+        rows.forEach(row => {
+          const ref = row.querySelector('td[data-column="ref_constructeur"]').textContent.toLowerCase();
+          const poste = row.querySelector('td[data-column="poste"]').textContent.toLowerCase();
+          const etat = row.querySelector('td[data-column="etat"]').textContent.toLowerCase();
+
+          const matchRef = ref.includes(valRef);
+          const matchPoste = poste.includes(valPoste);
+          const matchEtat = etat.includes(valEtat);
+
+          row.style.display = (matchRef && matchPoste && matchEtat) ? '' : 'none';
+        });
+      }
+
+      searchRef.addEventListener('input', filterRows);
+      searchPoste.addEventListener('input', filterRows);
+      searchEtat.addEventListener('input', filterRows);
+
+      // Tri des colonnes
+      const table = document.getElementById('machinesTable');
+      const headers = table.querySelectorAll('thead th[role="button"]');
+      let sortColumn = null;
+      let sortDirection = 'asc'; // 'asc' ou 'desc'
+
+      function compareCells(a, b, col, asc = true) {
+        const valA = a.querySelector(`td[data-column="${col}"]`)?.textContent.trim().toLowerCase() || '';
+        const valB = b.querySelector(`td[data-column="${col}"]`)?.textContent.trim().toLowerCase() || '';
+
+        // Dates
+        const dateA = Date.parse(valA);
+        const dateB = Date.parse(valB);
+        if (!isNaN(dateA) && !isNaN(dateB)) {
+          return asc ? dateA - dateB : dateB - dateA;
+        }
+
+        // Nombres
+        const numA = parseFloat(valA.replace(/[^\d.-]/g, ''));
+        const numB = parseFloat(valB.replace(/[^\d.-]/g, ''));
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return asc ? numA - numB : numB - numA;
+        }
+
+        // Texte
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
+      }
+
+      function clearSortIndicators() {
+        headers.forEach(th => {
+          th.classList.remove('sorted-asc', 'sorted-desc');
+          th.setAttribute('aria-sort', 'none');
+        });
+      }
+
+      headers.forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.column;
+          if (sortColumn === col) {
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+          } else {
+            sortColumn = col;
+            sortDirection = 'asc';
+          }
+          clearSortIndicators();
+          th.classList.add(sortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
+          th.setAttribute('aria-sort', sortDirection === 'asc' ? 'ascending' : 'descending');
+
+          // Trie seulement les lignes visibles (filtrées)
+          const visibleRows = rows.filter(row => row.style.display !== 'none');
+          visibleRows.sort((a, b) => compareCells(a, b, col, sortDirection === 'asc'));
+
+          // Replace visible rows in tbody in sorted order
+          visibleRows.forEach(row => tbody.appendChild(row));
+        });
+
+        th.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            th.click();
+          }
+        });
+      });
+
+      // Rendre les lignes cliquables redirigeant vers la photo Google Drive
+      document.querySelectorAll('tr.clickable-row[data-href]').forEach(row => {
+        row.addEventListener('click', (e) => {
+          // Empêche la propagation du clic sur les boutons dans la colonne Actions
+          if (e.target.closest('a, button')) return;
+          window.open(row.dataset.href, '_blank');
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>

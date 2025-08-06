@@ -1,19 +1,156 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-bs-theme="auto">
 <head>
-    <meta charset="UTF-8" />
-    <title>Confirmer la suppression</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <title>Confirmer la suppression</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --clr-primary: #0d6efd;       /* Bootstrap bleu primaire */
+      --clr-danger: #dc3545;        /* Bootstrap rouge danger */
+      --clr-danger-hover: #b02a37;
+      --clr-bg-light: #f8f9fa;      /* Gris clair */
+      --clr-bg-dark: #212529;       /* Gris foncé */
+      --clr-text-dark: #212529;
+      --clr-text-light: #f8f9fa;
+      --transition: 0.3s ease;
+      --btn-padding: 1rem 2.5rem;
+      --btn-font-size: 1.25rem;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: var(--clr-bg-light);
+      color: var(--clr-text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      transition: background var(--transition), color var(--transition);
+    }
+    [data-bs-theme="dark"] {
+      background: var(--clr-bg-dark);
+      color: var(--clr-text-light);
+    }
+
+    .card {
+      background: var(--bs-body-bg);
+      max-width: 520px;
+      width: 100%;
+      padding: 3rem 2.5rem;
+      border-radius: 1.2rem;
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: box-shadow var(--transition);
+    }
+    .card:hover, .card:focus-within {
+      box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 2.2rem;
+      margin-bottom: 1.8rem;
+      color: var(--clr-primary);
+    }
+    h2 span {
+      color: var(--clr-danger);
+      font-weight: 800;
+      user-select: text;
+    }
+
+    form {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    button, a.btn {
+      flex: 1 1 45%;
+      font-weight: 700;
+      padding: var(--btn-padding);
+      font-size: var(--btn-font-size);
+      border-radius: 0.7rem;
+      transition: background-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      user-select: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+    button {
+      background: var(--clr-danger);
+      color: white;
+      box-shadow: 0 6px 15px rgba(220, 53, 69, 0.5);
+    }
+    button:hover, button:focus {
+      background: var(--clr-danger-hover);
+      box-shadow: 0 8px 20px rgba(176, 42, 55, 0.7);
+      transform: translateY(-3px);
+      outline: none;
+    }
+    a.btn {
+      background: var(--clr-primary);
+      color: white;
+      box-shadow: 0 6px 15px rgba(13, 110, 253, 0.5);
+    }
+    a.btn:hover, a.btn:focus {
+      background: #084cd8;
+      box-shadow: 0 8px 20px rgba(8, 76, 216, 0.7);
+      transform: translateY(-3px);
+      outline: none;
+    }
+
+    @media (max-width: 500px) {
+      form {
+        flex-direction: column;
+      }
+      button, a.btn {
+        flex: 1 1 100%;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="mb-4">Confirmer la suppression du saisisseur : {{ user.username }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
-        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary ms-2">Annuler</a>
+  <div class="card" role="alertdialog" aria-labelledby="confirmation-title" aria-describedby="confirmation-desc" tabindex="0">
+    <h2 id="confirmation-title" tabindex="0">
+      Confirmer la suppression du saisisseur : <span aria-label="Nom du saisisseur">{{ user.username }}</span>
+    </h2>
+    <form method="post" aria-describedby="confirmation-desc">
+      {% csrf_token %}
+      <button type="submit" aria-label="Confirmer la suppression" class="btn" autofocus>
+        <i class="bi bi-trash3-fill" aria-hidden="true" style="font-size:1.4em;"></i> Confirmer la suppression
+      </button>
+      <a href="{% url 'admin_dashboard' %}" class="btn" role="button" aria-label="Annuler suppression">
+        <i class="bi bi-x-circle" aria-hidden="true" style="font-size:1.4em;"></i> Annuler
+      </a>
     </form>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

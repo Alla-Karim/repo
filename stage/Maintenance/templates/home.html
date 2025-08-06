@@ -4,32 +4,61 @@
 <head>
     <meta charset="UTF-8" />
     <title>Accueil - Safran</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 70px; /* espace pour footer */
         }
-        .hero {
-            background-image: url("{% static 'maintenance/images/safran.jpg' %}");
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            height: 400px;
-            position: relative;
+        /* Navbar améliorée */
+        nav.navbar {
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 1.2px;
+            color: #3b5bfd !important;
+        }
+        .btn-outline-primary {
+            border-width: 2px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .btn-outline-primary:hover {
+            background-color: #3b5bfd;
             color: white;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+            border-color: #3b5bfd;
         }
-        .hero-text {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            max-width: 600px;
+        /* Footer warning style */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #bb3e03; /* orange foncé warning */
+            padding: 1rem 1rem;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
+            font-size: 1rem;
+            z-index: 1000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+            font-weight: 600;
+        }
+        /* Hero text styles */
+        .hero-text h1, .hero-text p {
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
   <div class="container">
     <a class="navbar-brand fw-bold" href="{% url 'home' %}">Safran</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -45,8 +74,8 @@
 </nav>
 
 <!-- Message accès réservé en haut de page -->
-<div class="container mt-3">
-    <div class="alert alert-info text-center" role="alert">
+<div class="container mt-4">
+    <div class="alert alert-info text-center shadow-sm" role="alert">
         <h4 class="alert-heading">Accès réservé</h4>
         <p>
             Cette application est strictement réservée aux utilisateurs autorisés : 
@@ -57,41 +86,59 @@
     </div>
 </div>
 
-<div class="hero d-flex align-items-end">
-    <div class="hero-text">
+<!-- Hero avec overlay sombre -->
+<div class="hero d-flex align-items-end" style="
+    background-image: url('{% static 'maintenance/images/safran.jpg' %}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 420px;
+    position: relative;
+    padding: 2rem 3rem;
+    border-radius: 0 0 25px 25px;
+    overflow: hidden;
+">
+    <div class="hero-text" style="position: relative; max-width: 600px; z-index: 1;">
         <h1 class="display-4 fw-bold">Bienvenue chez Safran</h1>
         <p class="lead">Innovations et excellence au service de l'aéronautique et de la défense.</p>
     </div>
+    <div style="
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.7) 100%);
+        border-radius: 0 0 25px 25px;
+        z-index: 0;
+    "></div>
 </div>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Nos Domaines d'Expertise</h2>
+    <h2 class="text-center mb-5">Nos Domaines d'Expertise</h2>
     <div class="row g-4">
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm" style="border-radius: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
                 <div class="card-body">
-                    <h5 class="card-title">Aéronautique</h5>
-                    <p class="card-text">
+                    <h5 class="card-title" style="font-weight:700; font-size:1.25rem; color:#224abe;">Aéronautique</h5>
+                    <p class="card-text" style="font-size:1rem; color:#444; line-height:1.4;">
                         Conception et fabrication de moteurs et équipements aéronautiques de pointe.
                     </p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm" style="border-radius: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
                 <div class="card-body">
-                    <h5 class="card-title">Défense</h5>
-                    <p class="card-text">
+                    <h5 class="card-title" style="font-weight:700; font-size:1.25rem; color:#224abe;">Défense</h5>
+                    <p class="card-text" style="font-size:1rem; color:#444; line-height:1.4;">
                         Solutions innovantes pour la sécurité et la défense, adaptées aux besoins actuels.
                     </p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm" style="border-radius: 15px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
                 <div class="card-body">
-                    <h5 class="card-title">Espace</h5>
-                    <p class="card-text">
+                    <h5 class="card-title" style="font-weight:700; font-size:1.25rem; color:#224abe;">Espace</h5>
+                    <p class="card-text" style="font-size:1rem; color:#444; line-height:1.4;">
                         Technologies spatiales avancées, propulsions et équipements pour l’exploration.
                     </p>
                 </div>
@@ -99,14 +146,24 @@
         </div>
     </div>
 
-    <section class="my-5 text-center">
-        <h2>Engagés pour l'innovation durable</h2>
-        <p class="mx-auto" style="max-width:700px;">
+    <section class="my-5 text-center" style="background:#e8f0fe; padding:3rem 2rem; border-radius:20px; box-shadow: 0 6px 20px rgba(59, 91, 253, 0.15);">
+        <h2 style="font-weight:800; color:#3b5bfd; margin-bottom:1rem; font-size:2.3rem;">Engagés pour l'innovation durable</h2>
+        <p class="mx-auto" style="max-width:700px; font-size:1.1rem; color:#333; margin-bottom:1.7rem;">
             Safran s'engage dans la réduction de l'empreinte carbone et développe des solutions respectueuses de l’environnement pour un avenir plus vert.
         </p>
-        <a href="#" class="btn btn-primary btn-lg mt-3">En savoir plus</a>
+        <a href="#" class="btn btn-primary btn-lg mt-3" style="font-size:1.1rem; padding:0.85rem 2.5rem; border-radius:50px; font-weight:600; box-shadow: 0 6px 15px rgba(59, 91, 253, 0.3); transition: box-shadow 0.3s ease;">
+            En savoir plus
+        </a>
     </section>
 </div>
+
+<footer>
+    <p style="margin: 0;">
+        ⚠️ <strong>Attention :</strong> Cette application est strictement réservée à un usage interne.  
+        Toute utilisation externe est interdite et sera signalée.  
+        ℹ️ Veuillez suivre les procédures internes de sécurité et confidentialité.
+    </p>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

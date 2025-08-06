@@ -41,3 +41,13 @@ class Machine(models.Model):
 
     def __str__(self):
         return f"Machine {self.ref_constructeur} ({self.etat})"
+
+
+class PhotosMachines(models.Model):
+    machine = models.ForeignKey(Machine, on_delete=models.CASCADE, related_name='photos')
+    google_drive_url = models.URLField(verbose_name="Lien Google Drive")
+    description = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        desc = self.description if self.description else "Sans description"
+        return f"Photo pour {self.machine.ref_constructeur} - {desc}"

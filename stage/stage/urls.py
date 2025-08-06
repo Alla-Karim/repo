@@ -32,6 +32,9 @@ urlpatterns = [
 
     path('saisisseurs/add/', views.saisisseur_add, name='saisisseur_add'),
     path('admin-panel/saisisseurs/<int:user_id>/delete/', views.saisisseur_delete, name='saisisseur_delete'),
+    path('machines/<int:machine_id>/ajouter-photo/', views.ajouter_photo_machine, name='ajouter_photo_machine'),
+   path('machines/<int:machine_id>/supprimer-photos/', views.supprimer_photos_machine, name='supprimer_toutes_photos_par_machine'),
+
 ]
 
 from django.conf import settings

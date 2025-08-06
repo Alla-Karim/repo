@@ -2,6 +2,8 @@ from django import forms
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import PhotosMachines, Machine
+
 class MachineForm(forms.ModelForm):
     class Meta:
         model = Machine
@@ -37,3 +39,17 @@ class SaisisseurForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class PhotoMachineForm(forms.ModelForm):
+    google_drive_url = forms.URLField(
+        label="Lien Google Drive",
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://drive.google.com/…'})
+    )
+    description = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description (optionnelle)'})
+    )
+
+    class Meta:
+        model = PhotosMachines
+        fields = ['google_drive_url', 'description']  # Plus de champ 'machine'

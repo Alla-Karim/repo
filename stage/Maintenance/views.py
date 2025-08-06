@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts  import redirect
-
-
+from django.db.models import Prefetch
+from .forms import PhotoMachineForm
 from .models import *
 from .forms import MachineForm
 from django.contrib import messages
@@ -29,10 +29,11 @@ def is_saisisseur(user):
 def is_admin(user):
     return user.is_authenticated and user.is_superuser
 
-
 @login_required
 def machine_list(request):
-    machines = Machine.objects.all()
+    machines = Machine.objects.all().prefetch_related(
+        Prefetch('photos', queryset=PhotosMachines.objects.order_by('id'))
+    )
     return render(request, 'machine_list.html', {'machines': machines})
 
 @login_required
@@ -160,3 +161,25 @@ def saisisseur_delete(request, user_id):
         messages.success(request, f"Saisisseur {user.username} supprimé avec succès.")
         return redirect('admin_dashboard')
     return render(request, 'admin_panel/saisisseur_confirm_delete.html', {'user': user})
+
+@login_required
+def ajouter_photo_machine(request, machine_id):
+    machine = get_object_or_404(Machine, id=machine_id)
+    if request.method == 'POST':
+        form = PhotoMachineForm(request.POST)
+        if form.is_valid():
+            photo = form.save(commit=False)
+            photo.machine = machine  # Lien automatique à la machine
+            photo.save()
+            return redirect('machine_list')
+    else:
+        form = PhotoMachineForm()
+
+    return render(request, 'ajouter_photo_machine.html', {'form': form, 'machine': machine})
+
+
+@login_required
+def supprimer_photos_machine(request, machine_id):
+    machine = get_object_or_404(Machine, id=machine_id)
+    PhotosMachines.objects.filter(machine=machine).delete()
+    return redirect('machine_list')

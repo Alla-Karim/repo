@@ -1,38 +1,168 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" >
 <head>
     <meta charset="UTF-8" />
-    <title>Supprimer la machine</title>
+    <title>Confirmer la suppression</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9fa;
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(120deg, #fff7f7, #ffeaea);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
         .confirm-container {
-            max-width: 500px;
-            margin: 100px auto;
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.25);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            user-select: none;
+            border: 3px solid #dc3545; /* Rouge warning */
+            position: relative;
+        }
+        .confirm-container::before {
+            content: "";
+            position: absolute;
+            top: -12px; left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(220, 53, 69, 0.7);
+        }
+        .confirm-container::after {
+            content: "\f071"; /* code Unicode FontAwesome warning icon, fallback if needed */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            color: white;
+        }
+        .card-header {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+            user-select: none;
+        }
+        .confirm-message {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            user-select: text;
+        }
+        .machine-ref {
+            font-weight: 800;
+            font-size: 2rem;
+            color: #b02a37;
+            margin-bottom: 3rem;
+            user-select: text;
+            letter-spacing: 0.02em;
+        }
+        form, .btn-cancel {
+            display: inline-block;
+            margin: 0 1rem;
+        }
+        button.btn-confirm {
+            background-color: #dc3545;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 0.6rem;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.6);
+        }
+        button.btn-confirm:hover,
+        button.btn-confirm:focus {
+            background-color: #a71d2a;
+            transform: scale(1.08);
+            outline: none;
+            box-shadow: 0 10px 25px rgba(167, 29, 42, 0.9);
+        }
+        a.btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 0.6rem;
+            text-decoration: none;
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.6);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            user-select: none;
+        }
+        a.btn-cancel:hover,
+        a.btn-cancel:focus {
+            background-color: #4e555b;
+            transform: scale(1.08);
+            outline: none;
+            box-shadow: 0 10px 25px rgba(78, 85, 91, 0.9);
+        }
+        @media (max-width: 600px) {
+            .confirm-container {
+                padding: 2rem 1.5rem;
+                border-width: 2px;
+            }
+            button.btn-confirm,
+            a.btn-cancel {
+                width: 100%;
+                margin: 0.5rem 0;
+                padding: 1rem 0;
+                font-size: 1.2rem;
+            }
+            form, .btn-cancel {
+                display: block;
+                margin: 0;
+            }
+            .machine-ref {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container confirm-container">
-    <div class="card shadow">
-        <div class="card-header bg-danger text-white text-center">
-            <h3>⚠️ Confirmation de suppression</h3>
-        </div>
-        <div class="card-body text-center">
-            <p class="fs-5">Voulez-vous vraiment supprimer la machine :</p>
-            <h4 class="fw-bold text-danger mb-4">{{ machine.ref_constructeur }}</h4>
-
-            <form method="post" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-lg me-3">Confirmer la suppression</button>
-            </form>
-
-            <a href="{% url 'machine_list' %}" class="btn btn-secondary btn-lg">Annuler</a>
-        </div>
+<div class="confirm-container" role="dialog" aria-labelledby="confirmTitle" aria-describedby="confirmDesc" tabindex="-1">
+    <div class="card-header" id="confirmTitle">
+        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true" style="color:#dc3545; margin-right: 0.5rem; font-size:2.5rem;"></i>
+        Confirmation de suppression
     </div>
+    <p class="confirm-message" id="confirmDesc">
+        Voulez-vous vraiment supprimer la machine :
+    </p>
+    <p class="machine-ref" tabindex="0">{{ machine.ref_constructeur }}</p>
+
+    <form method="post" aria-label="Confirmer suppression machine">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirm" autofocus>
+            Confirmer la suppression
+        </button>
+    </form>
+
+    <a href="{% url 'machine_list' %}" class="btn-cancel" role="button" aria-label="Annuler la suppression">
+        Annuler
+    </a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
